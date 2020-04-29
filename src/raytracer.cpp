@@ -38,22 +38,33 @@ Color trace(
 	
 	Vec3f normal = obj_hit->normal(point_hit);
 
-	// Cast shadow ray
-	for(unsigned i = 0; i < objs.size(); ++i){
-		if(objs[i]->emissionColor != Vec3f(0)){
-			float transmission = 1;
-			Vec3f lightDirection = objs[i]->pos - point_hit;
-			lightDirection.normalize();
-			for(unsigned j = 0; j < objs.size(); ++j){
-				if(i != j){
-					if(objs[j]->intersect(point_hit, lightDirection)){
-						transmission = 0;
-						break;
+	if(depth < MAX_DEPTH && obj_hit->reflectivity > 0){
+		// Reflections
+		Vec3f in = point_hit - rayorig;
+		in.normalize();
+		Vec3f out = in - normal*2*(normal.dot(in));
+		out.normalize();
+		Color outRay = trace(objs, point_hit + normal*1e-6, out, depth+1);
+		rayColor += outRay * obj_hit->reflectivity;
+	}else if(obj_hit->reflectivity < 1){
+		// Cast shadow ray
+		for(unsigned i = 0; i < objs.size(); ++i){
+			if(objs[i]->emissionColor != Vec3f(0)){
+				float transmission = 1;
+				Vec3f lightDirection = objs[i]->pos - point_hit;
+				lightDirection.normalize();
+				for(unsigned j = 0; j < objs.size(); ++j){
+					if(i != j){
+						if(objs[j]->intersect(point_hit, lightDirection)){
+							transmission = 0;
+							break;
+						}
 					}
 				}
+				//std::cout << "objs[i] * transmission: " << (objs[i]->emissionColor * transmission) << "\n";
+				rayColor += obj_hit->surfaceColor * (objs[i]->emissionColor * transmission)
+						* std::max(float(0), normal.dot(lightDirection)) * (1-obj_hit->reflectivity);
 			}
-			std::cout << "objs[i] * transmission: " << (objs[i]->emissionColor * transmission) << "\n";
-			rayColor += obj_hit->surfaceColor * (objs[i]->emissionColor * transmission) * std::max(float(0), normal.dot(lightDirection));
 		}
 	}
 	return rayColor + (Color(255)*obj_hit->emissionColor);

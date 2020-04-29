@@ -10,13 +10,15 @@ public:
 	Vec3f pos;
 	Color surfaceColor;
 	Vec3f emissionColor;
+	float reflectivity;
 
 	// Standard Constructor
 	Object(
 		const Vec3f &p = Vec3f(0),
 		const Color &sc = Color(0),
-		const Vec3f &ec = Vec3f(0)
-	) : pos(p), surfaceColor(sc), emissionColor(ec) {}
+		const Vec3f &ec = Vec3f(0),
+		const float &rf = 0
+	) : pos(p), surfaceColor(sc), emissionColor(ec), reflectivity(rf) {}
 	
 	// Intersection virtual function
 	virtual bool intersect(const Vec3f &rayorig, const Vec3f &raydir, Vec3f *point_hit = NULL) const{(void)rayorig;(void)raydir;(void)point_hit;return false;}
@@ -30,8 +32,9 @@ public:
 		const Vec3f &p = Vec3f(0),
 		const float &r = 1,
 		const Color &sc = Color(0),
-		const Vec3f &ec = Vec3f(0)
-	) : Object(p, sc, ec), radius(r) {}
+		const Vec3f &ec = Vec3f(0),
+		const float &rf = 0
+	) : Object(p, sc, ec, rf), radius(r) {}
 	bool intersect(const Vec3f &rayorig, const Vec3f &raydir, Vec3f *point_hit) const;
 	Vec3f normal(const Vec3f &point) const;
 };
