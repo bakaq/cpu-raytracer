@@ -38,3 +38,17 @@ public:
 	bool intersect(const Vec3f &rayorig, const Vec3f &raydir, Vec3f *point_hit) const;
 	Vec3f normal(const Vec3f &point) const;
 };
+
+class InfinitePlane: public Object{
+public:
+	Vec3f normalDirection;
+	InfinitePlane(
+		const Vec3f &p = Vec3f(0),
+		const Vec3f &n = Vec3f(0,0,1),
+		const Color &sc = Color(0),
+		const Vec3f &ec = Vec3f(0),
+		const float &rf = 0
+	) : Object(p, sc, ec, rf), normalDirection(n) {}
+	bool intersect(const Vec3f &rayorig, const Vec3f &raydir, Vec3f *point_hit) const;
+	Vec3f normal(const Vec3f &point) const;
+};

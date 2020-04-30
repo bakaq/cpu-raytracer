@@ -29,3 +29,21 @@ bool Sphere::intersect(const Vec3f &rayorig, const Vec3f &raydir, Vec3f *point_h
 Vec3f Sphere::normal(const Vec3f &point) const{
 	return (point - pos).normalize();
 }
+
+bool InfinitePlane::intersect(const Vec3f &rayorig, const Vec3f &raydir, Vec3f *point_hit = NULL) const{
+	if(raydir.dot(normalDirection) >= 0){
+		return false;
+	}
+	
+	float d = ((pos - rayorig).dot(normalDirection))/(normalDirection.dot(raydir));
+
+	if(point_hit != NULL){
+		*point_hit = rayorig + raydir*d; 
+	}
+	return true;
+
+}
+
+Vec3f InfinitePlane::normal(const Vec3f &point) const{
+	return normalDirection;
+}
